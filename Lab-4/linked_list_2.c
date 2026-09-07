@@ -1,91 +1,66 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-struct node{
+struct node {
     int data;
-    struct node* link;
+    struct node *link;
 };
 
-void beginning(struct node** ptr_to_start){
-    struct node* tmp;
-
-    tmp = *ptr_to_start;
-    *ptr_to_start = tmp->link;
-
+void beginning(struct node **start) {
+    struct node *tmp = *start;
+    *start = tmp->link;
     free(tmp);
 }
 
-void ending(struct node* start){
-    struct node *ptr;
+void ending(struct node *start) {
+    struct node *ptr = start;
 
-    ptr = start;
-
-    while(ptr->link->link != NULL){
+    while (ptr->link->link)
         ptr = ptr->link;
-    }
+
     free(ptr->link);
     ptr->link = NULL;
 }
 
-void inbetween(struct node* start){
-    struct node *slow, *fast, *tmp;
+void inbetween(struct node *start) {
+    struct node *slow = start, *fast = start->link, *tmp;
 
-    slow = start;
-    fast = start->link;
-
-    while(fast->link != NULL && fast->link->link != NULL){
+    while (fast->link && fast->link->link) {
         fast = fast->link->link;
         slow = slow->link;
     }
 
     tmp = slow->link;
     slow->link = tmp->link;
-
     free(tmp);
 }
 
-int main(){
-    printf("Enter the number of elements in the linked list: ");
-
+int main() {
     int n;
-    scanf("%d",&n);
+    struct node *start = NULL, *ptr, *tmp;
 
-    struct node *ptr, *tmp, *start;
-    start = NULL;
-    ptr = NULL;
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
 
-    for(int i = 0; i < n; i++){
-        tmp = (struct node*) malloc(sizeof(struct node));
-
-        scanf("%d",&tmp->data);
+    for (int i = 0; i < n; i++) {
+        tmp = malloc(sizeof(struct node));
+        scanf("%d", &tmp->data);
         tmp->link = NULL;
 
-        if(start == NULL){
-            start = tmp;
-            ptr = tmp;
-        }
-        else{
+        if (!start)
+            start = ptr = tmp;
+        else {
             ptr->link = tmp;
             ptr = tmp;
         }
     }
 
-    // Delete the element at the beginning
     beginning(&start);
-
-    // Delete the element at the end
     ending(start);
-
-    // Delete the element in between
     inbetween(start);
 
-    // Printing the linked list
-    ptr = start;
-
-    while(ptr != NULL){
+    for (ptr = start; ptr; ptr = ptr->link)
         printf("%d ", ptr->data);
-        ptr = ptr->link;
-    }
 
     return 0;
 }
